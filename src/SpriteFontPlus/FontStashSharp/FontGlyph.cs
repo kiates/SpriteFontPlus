@@ -33,7 +33,7 @@ namespace FontStashSharp
 			{
 				return result;
 			}
-			result = StbTrueTypeSharp.StbTrueType.stbtt_GetGlyphKernAdvance(Font._font, Index, nextGlyph.Index);
+			result = Font.GetGlyphKernAdvance(Index, nextGlyph.Index);
 			_kernings[nextGlyph.Index] = result;
 
 			return result;
