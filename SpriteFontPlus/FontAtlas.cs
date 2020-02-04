@@ -190,10 +190,10 @@ namespace FontStashSharp
 			var g = glyph.Index;
 			fixed (byte* dst = &buffer[pad + pad * glyph.Bounds.Width])
 			{
-				glyph.Font.RenderGlyphBitmap(dst, 
-					glyph.Bounds.Width - pad * 2, 
+				glyph.Font.RenderGlyphBitmap(dst,
+					glyph.Bounds.Width - pad * 2,
 					glyph.Bounds.Height - pad * 2,
-					glyph.Bounds.Width, 
+					glyph.Bounds.Width,
 					g);
 			}
 
@@ -210,7 +210,8 @@ namespace FontStashSharp
 			for (var i = 0; i < colorBuffer.Length; ++i)
 			{
 				var c = buffer[i];
-				colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
+				colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
+				colorBuffer[i].A = c;
 			}
 
 			// Write to texture
