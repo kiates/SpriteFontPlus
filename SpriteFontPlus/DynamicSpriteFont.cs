@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace SpriteFontPlus
 {
@@ -142,6 +143,14 @@ namespace SpriteFontPlus
 		}
 
 		public Vector2 MeasureString(string text)
+		{
+			Bounds bounds = new Bounds();
+			_fontSystem.TextBounds(0, 0, text, ref bounds);
+
+			return new Vector2(bounds.X2, bounds.Y2);
+		}
+
+		public Vector2 MeasureString(StringBuilder text)
 		{
 			Bounds bounds = new Bounds();
 			_fontSystem.TextBounds(0, 0, text, ref bounds);
