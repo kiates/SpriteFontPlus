@@ -85,6 +85,7 @@
     <Compile Include="FontGlyphSquad.cs" />
     <Compile Include="FontSystem.cs" />
     <Compile Include="GlyphInfo.cs" />
+    <Compile Include="Int32Map.cs" />
     <Compile Include="IOUtils.cs" />
     <Compile Include="SpriteBatchExtensions.cs" />
   </ItemGroup>
