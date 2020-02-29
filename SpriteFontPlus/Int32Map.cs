@@ -97,7 +97,7 @@ namespace FontStashSharp {
                     return default(TValue);
                 }
             }
-            set => Insert(key, value, false);
+            set { Insert(key, value, false); }
         }
 
         IEnumerator<KeyValuePair<int, TValue>> IEnumerable<KeyValuePair<int, TValue>>.GetEnumerator() {

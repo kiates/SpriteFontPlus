@@ -16,9 +16,9 @@ namespace FontStashSharp {
         private int _fontSize;
 
         public int FontSize {
-            get => _fontSize;
-
-            set {
+            get { return _fontSize; }
+        
+set {
                 if (value == _fontSize) {
                     return;
                 }
