@@ -194,8 +194,12 @@ namespace FontStashSharp {
             }
             for (var i = 0; i < colorSize; ++i) {
                 var c = buffer[i];
+#if NOTPREMULT
                 colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
                 colorBuffer[i].A = c;
+#else
+                colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
+#endif
             }
 
             // Write to texture
