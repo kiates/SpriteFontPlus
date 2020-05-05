@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 
-
 namespace FontStashSharp {
     internal class FontGlyph {
         private readonly Int32Map<int> _kernings = new Int32Map<int>();
@@ -10,13 +9,10 @@ namespace FontStashSharp {
         public int Codepoint;
         public int Index;
         public int Size;
-        public int Blur;
         public Rectangle Bounds;
         public int XAdvance;
         public int XOffset;
         public int YOffset;
-
-        public int Pad => PadFromBlur(Blur);
 
         public int GetKerning(FontGlyph nextGlyph) {
             int result;

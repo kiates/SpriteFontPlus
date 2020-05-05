@@ -1,31 +1,21 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace FontStashSharp {
     internal unsafe class FontAtlas {
         byte[] _byteBuffer;
         Color[] _colorBuffer;
 
-        public int Width {
-            get; private set;
-        }
+        public int Width { get; private set; }
 
-        public int Height {
-            get; private set;
-        }
+        public int Height { get; private set; }
 
-        public int NodesNumber {
-            get; private set;
-        }
+        public int NodesNumber { get; private set; }
 
-        public FontAtlasNode[] Nodes {
-            get; private set;
-        }
+        public FontAtlasNode[] Nodes { get; private set; }
 
-        public Texture2D Texture {
-            get; set;
-        }
+        public Texture2D Texture { get; set; }
 
         public FontAtlas(int w, int h, int count) {
             Width = w;
@@ -157,8 +147,8 @@ namespace FontStashSharp {
             return true;
         }
 
-        public unsafe void RenderGlyph(GraphicsDevice device, FontGlyph glyph) {
-            var pad = glyph.Pad;
+        public unsafe void RenderGlyph(GraphicsDevice device, FontGlyph glyph, int blurAmount, int strokeAmount) {
+            var pad = Math.Max(FontGlyph.PadFromBlur(blurAmount), FontGlyph.PadFromBlur(strokeAmount));
 
             // Render glyph to byte buffer
             var bufferSize = glyph.Bounds.Width * glyph.Bounds.Height;
@@ -171,6 +161,13 @@ namespace FontStashSharp {
             Array.Clear(buffer, 0, bufferSize);
 
             var g = glyph.Index;
+            var colorSize = glyph.Bounds.Width * glyph.Bounds.Height;
+            var colorBuffer = _colorBuffer;
+            if ((colorBuffer == null) || (colorBuffer.Length < colorSize)) {
+                colorBuffer = new Color[colorSize];
+                _colorBuffer = colorBuffer;
+            }
+
             fixed (byte* dst = &buffer[pad + pad * glyph.Bounds.Width]) {
                 glyph.Font.RenderGlyphBitmap(dst,
                     glyph.Bounds.Width - pad * 2,
@@ -179,27 +176,88 @@ namespace FontStashSharp {
                     g);
             }
 
-            if (glyph.Blur > 0) {
-                fixed (byte* bdst = &buffer[0]) {
-                    Blur(bdst, glyph.Bounds.Width, glyph.Bounds.Height, glyph.Bounds.Width, glyph.Blur);
+            if (strokeAmount > 0) {
+                var width = glyph.Bounds.Width;
+                var top = width * strokeAmount;
+                var bottom = (glyph.Bounds.Height - strokeAmount) * glyph.Bounds.Width;
+                var right = glyph.Bounds.Width - strokeAmount;
+                var left = strokeAmount;
+
+                for (var i = 0; i < colorSize; ++i) {
+                    var c = 0;
+                    byte d;
+
+                    //Do the equivalent of 
+
+                    // >> 8 == / 256 which is approx / 255
+                    if (i >= top)
+                        c = buffer[i - top];
+                    if (i < bottom) {
+                        d = buffer[i + top];
+                        c = (255 - d) * c + 255 * d >> 8;
+                    }
+                    if (i % width >= left) {
+                        d = buffer[i - strokeAmount];
+                        c = (255 - d) * c + 255 * d >> 8;
+                    }
+                    if (i % width < right) {
+                        d = buffer[i + strokeAmount];
+                        c = (255 - d) * c + 255 * d >> 8;
+                    }
+
+                    if (c == 255)
+                        c = 0;
+
+                    colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 0;
+                    colorBuffer[i].A = (byte)c;
+                }
+
+                for (var i = 0; i < colorSize; ++i) {
+                    var c = buffer[i];
+                    if (c == 0)
+                        continue;
+                    if (c == 255) {
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = 255;
+                    }
+                    else {
+                        var alphaBot = colorBuffer[i].A;
+                        if (alphaBot == 0) {
+#if NOTPREMULT
+                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
+                            colorBuffer[i].A = c;
+#else
+                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
+#endif
+                        }
+                        else {
+#if NOTPREMULT
+                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = c;
+                            colorBuffer[i].A = (byte)((255 - alphaBot) * c + 255 * alphaBot >> 8);
+#else
+                            var alpha = ((255 - alphaBot) * c + 255 * alphaBot >> 8);
+                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = (byte)(alpha * c >> 8)
+                            colorBuffer[i].A = (byte)alpha;
+#endif
+                        }
+                    }
                 }
             }
+            else {
+                if (blurAmount > 0) {
+                    fixed (byte* bdst = &buffer[0]) {
+                        Blur(bdst, glyph.Bounds.Width, glyph.Bounds.Height, glyph.Bounds.Width, blurAmount);
+                    }
+                }
 
-            // Byte buffer to RGBA
-            var colorSize = glyph.Bounds.Width * glyph.Bounds.Height;
-            var colorBuffer = _colorBuffer;
-            if ((colorBuffer == null) || (colorBuffer.Length < colorSize)) {
-                colorBuffer = new Color[colorSize];
-                _colorBuffer = colorBuffer;
-            }
-            for (var i = 0; i < colorSize; ++i) {
-                var c = buffer[i];
+                for (var i = 0; i < colorSize; ++i) {
+                    var c = buffer[i];
 #if NOTPREMULT
-                colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
-                colorBuffer[i].A = c;
+                    colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
+                    colorBuffer[i].A = c;
 #else
                 colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
 #endif
+                }
             }
 
             // Write to texture

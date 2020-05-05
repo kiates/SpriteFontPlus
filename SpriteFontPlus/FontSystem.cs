@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FontStashSharp {
     internal unsafe class FontSystem {
@@ -17,8 +17,8 @@ namespace FontStashSharp {
 
         public int FontSize {
             get { return _fontSize; }
-        
-set {
+
+            set {
                 if (value == _fontSize) {
                     return;
                 }
@@ -31,7 +31,8 @@ set {
         }
 
         public Color Color;
-        public readonly int Blur;
+        public readonly int BlurAmount;
+        public readonly int StrokeAmount;
         public float Spacing;
         public Vector2 Scale;
         public bool UseKernings = true;
@@ -53,7 +54,7 @@ set {
 
         public event EventHandler CurrentAtlasFull;
 
-        public FontSystem(int width, int height, int blur = 0) {
+        public FontSystem(int width, int height, int blurAmount = 0, int strokeAmount = 0) {
             if (width <= 0) {
                 throw new ArgumentOutOfRangeException(nameof(width));
             }
@@ -62,11 +63,20 @@ set {
                 throw new ArgumentOutOfRangeException(nameof(height));
             }
 
-            if (blur < 0 || blur > 20) {
-                throw new ArgumentOutOfRangeException(nameof(blur));
+            if (blurAmount < 0 || blurAmount > 20) {
+                throw new ArgumentOutOfRangeException(nameof(blurAmount));
             }
 
-            Blur = blur;
+            if (strokeAmount < 0 || strokeAmount > 20) {
+                throw new ArgumentOutOfRangeException(nameof(strokeAmount));
+            }
+
+            if (strokeAmount != 0 && blurAmount != 0) {
+                throw new ArgumentException("Cannot have both blur and stroke.");
+            }
+
+            BlurAmount = blurAmount;
+            StrokeAmount = strokeAmount;
 
             _size = new Point(width, height);
 
@@ -150,14 +160,14 @@ set {
                 q.Y1 = (int)(q.Y1 * Scale.Y);
 
                 var destRect = new Rectangle((int)(x + q.X0),
-                                            (int)(y + q.Y0),
-                                            (int)(q.X1 - q.X0),
-                                            (int)(q.Y1 - q.Y0));
+                    (int)(y + q.Y0),
+                    (int)(q.X1 - q.X0),
+                    (int)(q.Y1 - q.Y0));
 
                 var sourceRect = new Rectangle((int)(q.S0 * _size.X),
-                                            (int)(q.T0 * _size.Y),
-                                            (int)((q.S1 - q.S0) * _size.X),
-                                            (int)((q.T1 - q.T0) * _size.Y));
+                    (int)(q.T0 * _size.Y),
+                    (int)((q.S1 - q.S0) * _size.X),
+                    (int)((q.T1 - q.T0) * _size.Y));
 
                 batch.Draw(glyph.Atlas.Texture,
                     destRect,
@@ -390,20 +400,20 @@ set {
             int advance, lsb, x0, y0, x1, y1;
             font.BuildGlyphBitmap(g, FontSize, font.Scale, &advance, &lsb, &x0, &y0, &x1, &y1);
 
-            var pad = FontGlyph.PadFromBlur(Blur);
+            var pad = Math.Max(FontGlyph.PadFromBlur(BlurAmount), FontGlyph.PadFromBlur(StrokeAmount));
             var gw = x1 - x0 + pad * 2;
             var gh = y1 - y0 + pad * 2;
+            var offset = FontGlyph.PadFromBlur(BlurAmount);
 
             glyph = new FontGlyph {
                 Font = font,
                 Codepoint = codepoint,
                 Size = FontSize,
-                Blur = Blur,
                 Index = g,
                 Bounds = new Rectangle(0, 0, gw, gh),
                 XAdvance = (int)(font.Scale * advance * 10.0f),
-                XOffset = x0 - pad,
-                YOffset = y0 - pad
+                XOffset = x0 - offset,
+                YOffset = y0 - offset
             };
 
             glyphs[codepoint] = glyph;
@@ -440,7 +450,7 @@ set {
             glyph.Bounds.X = gx;
             glyph.Bounds.Y = gy;
 
-            currentAtlas.RenderGlyph(graphicsDevice, glyph);
+            currentAtlas.RenderGlyph(graphicsDevice, glyph, BlurAmount, StrokeAmount);
 
             glyph.Atlas = currentAtlas;
 
