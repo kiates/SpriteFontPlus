@@ -183,62 +183,57 @@ namespace FontStashSharp {
                 var right = glyph.Bounds.Width - strokeAmount;
                 var left = strokeAmount;
 
+                byte d;
                 for (var i = 0; i < colorSize; ++i) {
-                    var c = 0;
-                    byte d;
+                    var col = buffer[i];
+                    var black = 0;
+                    if (col == 255) {
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = 255;
+                        continue;
+                    }
 
-                    //Do the equivalent of 
-
-                    // >> 8 == / 256 which is approx / 255
                     if (i >= top)
-                        c = buffer[i - top];
+                        black = buffer[i - top];
                     if (i < bottom) {
                         d = buffer[i + top];
-                        c = (255 - d) * c + 255 * d >> 8;
+                        black = ((255 - d) * black + 255 * d) / 255;
                     }
                     if (i % width >= left) {
                         d = buffer[i - strokeAmount];
-                        c = (255 - d) * c + 255 * d >> 8;
+                        black = ((255 - d) * black + 255 * d) / 255;
                     }
                     if (i % width < right) {
                         d = buffer[i + strokeAmount];
-                        c = (255 - d) * c + 255 * d >> 8;
+                        black = ((255 - d) * black + 255 * d) / 255;
                     }
 
-                    if (c == 255)
-                        c = 0;
-
-                    colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 0;
-                    colorBuffer[i].A = (byte)c;
-                }
-
-                for (var i = 0; i < colorSize; ++i) {
-                    var c = buffer[i];
-                    if (c == 0)
-                        continue;
-                    if (c == 255) {
-                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = 255;
+                    if (black == 0) {
+                        if (col == 0) {
+                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = 0; //black transparency to suit stroke
+                            continue;
+                        }
+#if NOTPREMULT
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
+                        colorBuffer[i].A = col;
+#else
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = col;
+#endif
                     }
                     else {
-                        var alphaBot = colorBuffer[i].A;
-                        if (alphaBot == 0) {
-#if NOTPREMULT
-                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
-                            colorBuffer[i].A = c;
-#else
-                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
-#endif
+                        if (col == 0) {
+                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 0;
+                            colorBuffer[i].A = (byte)black;
+                            continue;
                         }
-                        else {
+
 #if NOTPREMULT
-                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = c;
-                            colorBuffer[i].A = (byte)((255 - alphaBot) * c + 255 * alphaBot >> 8);
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = col;
+                        colorBuffer[i].A = (byte)(((255 - col) * black + 255 * col) / 255);
 #else
-                            var alpha = ((255 - alphaBot) * c + 255 * alphaBot >> 8);
-                            colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = (byte)(alpha * c >> 8)
-                            colorBuffer[i].A = (byte)alpha;
+                        var alpha = ((255 - col) * black + 255 * col >> 8);
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = (byte)((alpha * col) / 255)
+                        colorBuffer[i].A = (byte)alpha;
 #endif
-                        }
                     }
                 }
             }
