@@ -231,7 +231,7 @@ namespace FontStashSharp {
                         colorBuffer[i].A = (byte)(((255 - col) * black + 255 * col) / 255);
 #else
                         var alpha = ((255 - col) * black + 255 * col) / 255;
-                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = (byte)((alpha * col) / 255)
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = (byte)((alpha * col) / 255);
                         colorBuffer[i].A = (byte)alpha;
 #endif
                     }
@@ -250,7 +250,7 @@ namespace FontStashSharp {
                     colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
                     colorBuffer[i].A = c;
 #else
-                colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
+                    colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
 #endif
                 }
             }
