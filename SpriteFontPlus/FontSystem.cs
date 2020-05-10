@@ -1,12 +1,16 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace FontStashSharp {
     internal unsafe class FontSystem {
-        private readonly Int32Map<Int32Map<FontGlyph>> _glyphs = new Int32Map<Int32Map<FontGlyph>>();
+        class GlyphCollection {
+            internal Int32Map<FontGlyph> Glyphs = new Int32Map<FontGlyph>();
+        }
+
+        private readonly Int32Map<GlyphCollection> _glyphs = new Int32Map<GlyphCollection>();
 
         private readonly List<Font> _fonts = new List<Font>();
         private float _ith;
@@ -16,7 +20,7 @@ namespace FontStashSharp {
         private int _fontSize;
 
         public int FontSize {
-            get { return _fontSize; }
+            get => _fontSize;
 
             set {
                 if (value == _fontSize) {
@@ -98,13 +102,13 @@ namespace FontStashSharp {
             _fonts.Add(font);
         }
 
-        private Int32Map<FontGlyph> GetGlyphsCollection(int size) {
-            Int32Map<FontGlyph> result;
+        private GlyphCollection GetGlyphsCollection(int size) {
+            GlyphCollection result;
             if (_glyphs.TryGetValue(size, out result)) {
                 return result;
             }
 
-            result = new Int32Map<FontGlyph>();
+            result = new GlyphCollection();
             _glyphs[size] = result;
             return result;
         }
@@ -112,14 +116,14 @@ namespace FontStashSharp {
         public float DrawText(SpriteBatch batch, float x, float y, string str, float depth) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
-            var glyphs = GetGlyphsCollection(FontSize);
+            var collection = GetGlyphsCollection(FontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
             for (var i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1) {
                 var codepoint = char.ConvertToUtf32(str, i);
 
-                var glyph = GetGlyph(batch.GraphicsDevice, glyphs, codepoint);
+                var glyph = GetGlyph(batch.GraphicsDevice, collection, codepoint);
                 if (glyph == null) {
                     continue;
                 }
@@ -147,12 +151,12 @@ namespace FontStashSharp {
                     continue;
                 }
 
-                var glyph = GetGlyph(batch.GraphicsDevice, glyphs, codepoint);
+                var glyph = GetGlyph(batch.GraphicsDevice, collection, codepoint);
                 if (glyph == null) {
                     continue;
                 }
 
-                GetQuad(glyph, prevGlyph, Spacing, ref originX, ref originY, &q);
+                GetQuad(glyph, prevGlyph, collection, Spacing, ref originX, ref originY, &q);
 
                 q.X0 = (int)(q.X0 * Scale.X);
                 q.X1 = (int)(q.X1 * Scale.X);
@@ -187,14 +191,14 @@ namespace FontStashSharp {
         public float TextBounds(float x, float y, string str, ref Bounds bounds) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
-            var glyphs = GetGlyphsCollection(FontSize);
+            var collection = GetGlyphsCollection(FontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
             for (var i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1) {
                 var codepoint = char.ConvertToUtf32(str, i);
 
-                var glyph = GetGlyph(null, glyphs, codepoint);
+                var glyph = GetGlyph(null, collection, codepoint);
                 if (glyph == null) {
                     continue;
                 }
@@ -228,12 +232,12 @@ namespace FontStashSharp {
                     continue;
                 }
 
-                var glyph = GetGlyph(null, glyphs, codepoint);
+                var glyph = GetGlyph(null, collection, codepoint);
                 if (glyph == null) {
                     continue;
                 }
 
-                GetQuad(glyph, prevGlyph, Spacing, ref x, ref y, &q);
+                GetQuad(glyph, prevGlyph, collection, Spacing, ref x, ref y, &q);
                 if (q.X0 < minx)
                     minx = q.X0;
                 if (x > maxx)
@@ -259,14 +263,14 @@ namespace FontStashSharp {
         public float TextBounds(float x, float y, StringBuilder str, ref Bounds bounds) {
             if (str == null || str.Length <= 0) return 0.0f;
 
-            var glyphs = GetGlyphsCollection(FontSize);
+            var collection = GetGlyphsCollection(FontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
             for (var i = 0; i < str.Length; i += StringBuilderIsSurrogatePair(str, i) ? 2 : 1) {
                 var codepoint = StringBuilderConvertToUtf32(str, i);
 
-                var glyph = GetGlyph(null, glyphs, codepoint);
+                var glyph = GetGlyph(null, collection, codepoint);
                 if (glyph == null) {
                     continue;
                 }
@@ -300,12 +304,12 @@ namespace FontStashSharp {
                     continue;
                 }
 
-                var glyph = GetGlyph(null, glyphs, codepoint);
+                var glyph = GetGlyph(null, collection, codepoint);
                 if (glyph == null) {
                     continue;
                 }
 
-                GetQuad(glyph, prevGlyph, Spacing, ref x, ref y, &q);
+                GetQuad(glyph, prevGlyph, collection, Spacing, ref x, ref y, &q);
                 if (q.X0 < minx)
                     minx = q.X0;
                 if (x > maxx)
@@ -385,9 +389,9 @@ namespace FontStashSharp {
             return g;
         }
 
-        private FontGlyph GetGlyphWithoutBitmap(Int32Map<FontGlyph> glyphs, int codepoint) {
+        private FontGlyph GetGlyphWithoutBitmap(GlyphCollection collection, int codepoint) {
             FontGlyph glyph = null;
-            if (glyphs.TryGetValue(codepoint, out glyph)) {
+            if (collection.Glyphs.TryGetValue(codepoint, out glyph)) {
                 return glyph;
             }
 
@@ -416,12 +420,12 @@ namespace FontStashSharp {
                 YOffset = y0 - offset
             };
 
-            glyphs[codepoint] = glyph;
+            collection.Glyphs[codepoint] = glyph;
 
             return glyph;
         }
 
-        private FontGlyph GetGlyphInternal(GraphicsDevice graphicsDevice, Int32Map<FontGlyph> glyphs, int codepoint) {
+        private FontGlyph GetGlyphInternal(GraphicsDevice graphicsDevice, GlyphCollection glyphs, int codepoint) {
             var glyph = GetGlyphWithoutBitmap(glyphs, codepoint);
             if (glyph == null) {
                 return null;
@@ -457,7 +461,7 @@ namespace FontStashSharp {
             return glyph;
         }
 
-        private FontGlyph GetGlyph(GraphicsDevice graphicsDevice, Int32Map<FontGlyph> glyphs, int codepoint) {
+        private FontGlyph GetGlyph(GraphicsDevice graphicsDevice, GlyphCollection glyphs, int codepoint) {
             var result = GetGlyphInternal(graphicsDevice, glyphs, codepoint);
             if (result == null && DefaultCharacter != null) {
                 result = GetGlyphInternal(graphicsDevice, glyphs, DefaultCharacter.Value);
@@ -466,11 +470,11 @@ namespace FontStashSharp {
             return result;
         }
 
-        private void GetQuad(FontGlyph glyph, FontGlyph prevGlyph, float spacing, ref float x, ref float y, FontGlyphSquad* q) {
+        private void GetQuad(FontGlyph glyph, FontGlyph prevGlyph, GlyphCollection collection, float spacing, ref float x, ref float y, FontGlyphSquad* q) {
             if (prevGlyph != null) {
                 float adv = 0;
                 if (UseKernings && glyph.Font == prevGlyph.Font) {
-                    adv = prevGlyph.GetKerning(glyph) * glyph.Font.Scale;
+                    adv = prevGlyph.Font.GetGlyphKernAdvance(prevGlyph.Index, glyph.Index) * glyph.Font.Scale;
                 }
 
                 x += (int)(adv + spacing + 0.5f);

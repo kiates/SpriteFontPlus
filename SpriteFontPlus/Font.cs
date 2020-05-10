@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace FontStashSharp {
     internal class Font {
+        private readonly Int32Map<int> _kernings = new Int32Map<int>();
+
         private float AscentBase, DescentBase, LineHeightBase;
 
         public float Ascent { get; private set; }
@@ -43,7 +45,14 @@ namespace FontStashSharp {
         }
 
         public int GetGlyphKernAdvance(int glyph1, int glyph2) {
-            return NativeMethods.GetGlyphKernAdvance(_font, glyph1, glyph2);
+            var key = ((glyph1 << 16) | (glyph1 >> 16)) ^ glyph2;
+            int result;
+            if (_kernings.TryGetValue(key, out result)) {
+                return result;
+            }
+            result = NativeMethods.GetGlyphKernAdvance(_font, glyph1, glyph2);
+            _kernings[key] = result;
+            return result;
         }
 
         public static unsafe Font FromMemory(byte[] data) {
