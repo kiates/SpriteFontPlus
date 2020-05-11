@@ -70,6 +70,22 @@ namespace SpriteFontPlus {
             _fontSystem.AddFontMem(ttf);
         }
 
+
+        public float DrawString(SpriteBatch batch, StringBuilder text, Vector2 pos, Color color) {
+            return DrawString(batch, text, pos, color, Vector2.One);
+        }
+
+        public float DrawString(SpriteBatch batch, StringBuilder text, Vector2 pos, Color color, Vector2 scale, float depth = 0f) {
+            _fontSystem.Color = color;
+            _fontSystem.Scale = scale;
+
+            var result = _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth);
+
+            _fontSystem.Scale = Vector2.One;
+
+            return result;
+        }
+
         public float DrawString(SpriteBatch batch, string text, Vector2 pos, Color color) {
             return DrawString(batch, text, pos, color, Vector2.One);
         }
