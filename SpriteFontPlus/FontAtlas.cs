@@ -251,9 +251,12 @@ namespace SpriteFontPlus {
             if (Texture == null) {
                 Texture = new Texture2D(device, Width, Height);
             }
-
+#if TEXTURESETDATAEXT
             fixed (Color* p = colorBuffer)
                 Texture.SetDataEXT(0, 0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
+#else
+            Texture.SetData(0, 0, glyph.Bounds, colorBuffer, 0, colorSize);
+#endif
         }
 
         void Blur(byte* dst, int w, int h, int dstStride, int blur) {
