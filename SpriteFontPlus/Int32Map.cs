@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace FontStashSharp {
+namespace SpriteFontPlus {
     class ThrowHelper {
         public static void KeyNotFoundException() {
             throw new KeyNotFoundException();
@@ -22,29 +22,11 @@ namespace FontStashSharp {
     }
 
     class SizingHelper {
-        static readonly int[] Sizings = {
-            1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824, 2147483647 /*+1*/
-        };
-
         static readonly int[] Primes = {
             3, 5, 7, 11, 17, 23, 37, 53, 79, 113, 163, 229, 331, 463, 653, 919, 1289, 1811, 2539, 3557, 4987, 6983, 9781, 13693, 19181, 26861, 37607, 52667, 73751, 103289,
             144611, 202471, 283463, 396871, 555637, 777901, 1089091, 1524763, 2134697, 2988607, 4184087, 5857727, 8200847, 11481199, 16073693, 22503181, 31504453, 44106241,
             61748749, 86448259, 121027583, 169438627, 237214097, 332099741, 464939639, 650915521, 911281733, 1275794449, 1786112231
         };
-
-        public static int GetSizingPow2(int size) {
-            foreach (var num in Sizings)
-                if (num >= size)
-                    return num;
-            throw new Exception("Trying to find a too large sizing.");
-        }
-
-        public static int NextSizingPow2(int size) {
-            foreach (var num in Sizings)
-                if (num > size)
-                    return num;
-            throw new Exception("Trying to find a too large sizing.");
-        }
 
         public static int GetSizingPrime(int min) {
             for (var index = 0; index < Primes.Length; ++index) {
@@ -82,7 +64,9 @@ namespace FontStashSharp {
                 Initialize(capacity);
         }
 
-        public int Count => _count - _freeCount;
+        public int Count {
+            get { return _count - _freeCount; }
+        }
 
         public TValue this[int key] {
             get {
@@ -253,29 +237,6 @@ namespace FontStashSharp {
                 value = default(TValue);
                 return false;
             }
-        }
-
-        public bool TrySwapValue(int key, TValue swapValue, out TValue value) {
-            unchecked {
-                if (_buckets != null) {
-                    var num = key & int.MaxValue;
-                    for (var index = _buckets[num % _buckets.Length]; index >= 0; index = _entries[index].Next)
-                        if (_entries[index].Key == key) {
-                            value = _entries[index].Value;
-                            _entries[index].Value = swapValue;
-                            return true;
-                        }
-                }
-                value = default(TValue);
-                return false;
-            }
-        }
-
-        internal TValue GetValueOrDefault(int key) {
-            var entry = FindEntry(key);
-            if (entry >= 0)
-                return _entries[entry].Value;
-            return default(TValue);
         }
 
         public Enumerator GetEnumerator() {

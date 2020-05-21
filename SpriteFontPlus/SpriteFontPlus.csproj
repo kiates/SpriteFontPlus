@@ -31,17 +31,19 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>NOTPREMULT</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Switch|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Switch\</OutputPath>
-    <DefineConstants>CONSOLE;SWITCH;NOTPREMULT</DefineConstants>
+    <DefineConstants>CONSOLE;SWITCH</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -79,7 +81,6 @@
     <Compile Include="FontGlyph.cs" />
     <Compile Include="FontGlyphSquad.cs" />
     <Compile Include="FontSystem.cs" />
-    <Compile Include="GlyphInfo.cs" />
     <Compile Include="Int32Map.cs" />
     <Compile Include="IOUtils.cs" />
     <Compile Include="SpriteBatchExtensions.cs" />

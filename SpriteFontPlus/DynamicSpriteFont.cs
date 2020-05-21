@@ -1,17 +1,15 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using FontStashSharp;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using SpriteFontPlus.Utility;
 
 namespace SpriteFontPlus {
-    public class DynamicSpriteFont {
+    public class DynamicSpriteFont: IDisposable {
         internal struct TextureEnumerator : IEnumerable<Texture2D> {
-            private readonly FontSystem _font;
+            readonly FontSystem _font;
 
             public TextureEnumerator(FontSystem font) {
                 _font = font;
@@ -28,7 +26,7 @@ namespace SpriteFontPlus {
             }
         }
 
-        private readonly FontSystem _fontSystem;
+        readonly FontSystem _fontSystem;
 
         public IEnumerable<Texture2D> Textures {
             get { return new TextureEnumerator(_fontSystem); }
@@ -62,7 +60,7 @@ namespace SpriteFontPlus {
             remove { _fontSystem.CurrentAtlasFull -= value; }
         }
 
-        private DynamicSpriteFont(byte[] ttf, int defaultSize, int textureWidth, int textureHeight, int blur, int stroke) {
+        DynamicSpriteFont(byte[] ttf, int defaultSize, int textureWidth, int textureHeight, int blur, int stroke) {
             _fontSystem = new FontSystem(textureWidth, textureHeight, blur, stroke) {
                 FontSize = defaultSize
             };
@@ -70,6 +68,9 @@ namespace SpriteFontPlus {
             _fontSystem.AddFontMem(ttf);
         }
 
+        public void Dispose() {
+            _fontSystem?.Dispose();
+        }
 
         public float DrawString(SpriteBatch batch, StringBuilder text, Vector2 pos, Color color) {
             return DrawString(batch, text, pos, color, Vector2.One);
@@ -110,21 +111,21 @@ namespace SpriteFontPlus {
         }
 
         public Vector2 MeasureString(string text) {
-            Bounds bounds = new Bounds();
+            var bounds = new Bounds();
             _fontSystem.TextBounds(0, 0, text, ref bounds);
 
             return new Vector2(bounds.X2, bounds.Y2);
         }
 
         public Vector2 MeasureString(StringBuilder text) {
-            Bounds bounds = new Bounds();
+            var bounds = new Bounds();
             _fontSystem.TextBounds(0, 0, text, ref bounds);
 
             return new Vector2(bounds.X2, bounds.Y2);
         }
 
         public Rectangle GetTextBounds(Vector2 position, string text) {
-            Bounds bounds = new Bounds();
+            var bounds = new Bounds();
             _fontSystem.TextBounds(position.X, position.Y, text, ref bounds);
 
             return new Rectangle((int)bounds.X, (int)bounds.Y, (int)(bounds.X2 - bounds.X), (int)(bounds.Y2 - bounds.Y));

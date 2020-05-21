@@ -4,20 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FontStashSharp {
-    internal unsafe class FontSystem {
+namespace SpriteFontPlus {
+    unsafe class FontSystem : IDisposable {
         class GlyphCollection {
-            internal Int32Map<FontGlyph> Glyphs = new Int32Map<FontGlyph>();
+            internal readonly Int32Map<FontGlyph> Glyphs = new Int32Map<FontGlyph>();
         }
 
-        private readonly Int32Map<GlyphCollection> _glyphs = new Int32Map<GlyphCollection>();
+        readonly Int32Map<GlyphCollection> _glyphs = new Int32Map<GlyphCollection>();
 
-        private readonly List<Font> _fonts = new List<Font>();
-        private float _ith;
-        private float _itw;
-        private FontAtlas _currentAtlas;
-        private Point _size;
-        private int _fontSize;
+        readonly List<Font> _fonts = new List<Font>();
+        float _ith;
+        float _itw;
+        FontAtlas _currentAtlas;
+        Point _size;
+        int _fontSize;
 
         public int FontSize {
             get { return _fontSize; }
@@ -89,6 +89,17 @@ namespace FontStashSharp {
             ClearState();
         }
 
+        public void Dispose() {
+            if (_fonts != null) {
+                foreach (var font in _fonts)
+                    font.Dispose();
+                _fonts.Clear();
+            }
+            Atlases?.Clear();
+            _currentAtlas = null;
+            _glyphs?.Clear();
+        }
+
         public void ClearState() {
             FontSize = 12;
             Color = Color.White;
@@ -102,7 +113,7 @@ namespace FontStashSharp {
             _fonts.Add(font);
         }
 
-        private GlyphCollection GetGlyphsCollection(int size) {
+        GlyphCollection GetGlyphsCollection(int size) {
             GlyphCollection result;
             if (_glyphs.TryGetValue(size, out result)) {
                 return result;
@@ -450,7 +461,7 @@ namespace FontStashSharp {
             Reset(_size.X, _size.Y);
         }
 
-        private int GetCodepointIndex(int codepoint, out Font font) {
+        int GetCodepointIndex(int codepoint, out Font font) {
             font = null;
 
             var g = 0;
@@ -465,7 +476,7 @@ namespace FontStashSharp {
             return g;
         }
 
-        private FontGlyph GetGlyphWithoutBitmap(GlyphCollection collection, int codepoint) {
+        FontGlyph GetGlyphWithoutBitmap(GlyphCollection collection, int codepoint) {
             FontGlyph glyph = null;
             if (collection.Glyphs.TryGetValue(codepoint, out glyph)) {
                 return glyph;
@@ -501,7 +512,7 @@ namespace FontStashSharp {
             return glyph;
         }
 
-        private FontGlyph GetGlyphInternal(GraphicsDevice graphicsDevice, GlyphCollection glyphs, int codepoint) {
+        FontGlyph GetGlyphInternal(GraphicsDevice graphicsDevice, GlyphCollection glyphs, int codepoint) {
             var glyph = GetGlyphWithoutBitmap(glyphs, codepoint);
             if (glyph == null) {
                 return null;
@@ -537,7 +548,7 @@ namespace FontStashSharp {
             return glyph;
         }
 
-        private FontGlyph GetGlyph(GraphicsDevice graphicsDevice, GlyphCollection glyphs, int codepoint) {
+        FontGlyph GetGlyph(GraphicsDevice graphicsDevice, GlyphCollection glyphs, int codepoint) {
             var result = GetGlyphInternal(graphicsDevice, glyphs, codepoint);
             if (result == null && DefaultCharacter != null) {
                 result = GetGlyphInternal(graphicsDevice, glyphs, DefaultCharacter.Value);
@@ -546,7 +557,7 @@ namespace FontStashSharp {
             return result;
         }
 
-        private void GetQuad(FontGlyph glyph, FontGlyph prevGlyph, GlyphCollection collection, float spacing, ref float x, ref float y, FontGlyphSquad* q) {
+        void GetQuad(FontGlyph glyph, FontGlyph prevGlyph, GlyphCollection collection, float spacing, ref float x, ref float y, FontGlyphSquad* q) {
             if (prevGlyph != null) {
                 float adv = 0;
                 if (UseKernings && glyph.Font == prevGlyph.Font) {

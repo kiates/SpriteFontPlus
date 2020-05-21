@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FontStashSharp {
-    internal class Font {
-        private readonly Int32Map<int> _kernings = new Int32Map<int>();
+namespace SpriteFontPlus {
+    class Font : IDisposable {
+        readonly Int32Map<int> _kernings = new Int32Map<int>();
 
-        private float AscentBase, DescentBase, LineHeightBase;
+        float _ascentBase, _descentBase, _lineHeightBase;
 
         public float Ascent { get; private set; }
         public float Descent { get; private set; }
@@ -13,9 +13,6 @@ namespace FontStashSharp {
         public float Scale { get; private set; }
 
         IntPtr _font;
-
-        private Font() {
-        }
 
         public void Dispose() {
             if (_font != IntPtr.Zero) {
@@ -25,9 +22,9 @@ namespace FontStashSharp {
         }
 
         public void Recalculate(float size) {
-            Ascent = AscentBase * size;
-            Descent = DescentBase * size;
-            LineHeight = LineHeightBase * size;
+            Ascent = _ascentBase * size;
+            Descent = _descentBase * size;
+            LineHeight = _lineHeightBase * size;
             Scale = NativeMethods.ScaleForPixelHeight(_font, size);
         }
 
@@ -67,9 +64,9 @@ namespace FontStashSharp {
             NativeMethods.GetFontVMetrics(font._font, &ascent, &descent, &lineGap);
 
             var fh = ascent - descent;
-            font.AscentBase = ascent / (float)fh;
-            font.DescentBase = descent / (float)fh;
-            font.LineHeightBase = (fh + lineGap) / (float)fh;
+            font._ascentBase = ascent / (float)fh;
+            font._descentBase = descent / (float)fh;
+            font._lineHeightBase = (fh + lineGap) / (float)fh;
 
             return font;
         }

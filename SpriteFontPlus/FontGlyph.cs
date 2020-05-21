@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace FontStashSharp {
-    internal class FontGlyph {
+namespace SpriteFontPlus {
+    class FontGlyph {
         public Font Font;
         public FontAtlas Atlas;
         public int Codepoint;

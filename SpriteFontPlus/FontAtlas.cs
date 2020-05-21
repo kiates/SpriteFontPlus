@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
-namespace FontStashSharp {
-    internal unsafe class FontAtlas {
+namespace SpriteFontPlus {
+    unsafe class FontAtlas {
         byte[] _byteBuffer;
         Color[] _colorBuffer;
 
@@ -21,7 +21,6 @@ namespace FontStashSharp {
             Width = w;
             Height = h;
             Nodes = new FontAtlasNode[count];
-            count = 0;
             Nodes[0].X = 0;
             Nodes[0].Y = 0;
             Nodes[0].Width = w;
@@ -52,13 +51,6 @@ namespace FontStashSharp {
             for (var i = idx; i < NodesNumber - 1; i++)
                 Nodes[i] = Nodes[i + 1];
             NodesNumber--;
-        }
-
-        public void Expand(int w, int h) {
-            if (w > Width)
-                InsertNode(NodesNumber, Width, 0, w - Width);
-            Width = w;
-            Height = h;
         }
 
         public void Reset(int w, int h) {
@@ -147,7 +139,7 @@ namespace FontStashSharp {
             return true;
         }
 
-        public unsafe void RenderGlyph(GraphicsDevice device, FontGlyph glyph, int blurAmount, int strokeAmount) {
+        public void RenderGlyph(GraphicsDevice device, FontGlyph glyph, int blurAmount, int strokeAmount) {
             var pad = Math.Max(FontGlyph.PadFromBlur(blurAmount), FontGlyph.PadFromBlur(strokeAmount));
 
             // Render glyph to byte buffer
@@ -212,11 +204,11 @@ namespace FontStashSharp {
                             colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = 0; //black transparency to suit stroke
                             continue;
                         }
-#if NOTPREMULT
+#if PREMULTIPLIEDALPHA
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = col;
+#else
                         colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
                         colorBuffer[i].A = col;
-#else
-                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = col;
 #endif
                     }
                     else {
@@ -226,13 +218,13 @@ namespace FontStashSharp {
                             continue;
                         }
 
-#if NOTPREMULT
-                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = col;
-                        colorBuffer[i].A = (byte)(((255 - col) * black + 255 * col) / 255);
-#else
+#if PREMULTIPLIEDALPHA
                         var alpha = ((255 - col) * black + 255 * col) / 255;
                         colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = (byte)((alpha * col) / 255);
                         colorBuffer[i].A = (byte)alpha;
+#else
+                        colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = col;
+                        colorBuffer[i].A = (byte)(((255 - col) * black + 255 * col) / 255);
 #endif
                     }
                 }
@@ -246,11 +238,11 @@ namespace FontStashSharp {
 
                 for (var i = 0; i < colorSize; ++i) {
                     var c = buffer[i];
-#if NOTPREMULT
+#if PREMULTIPLIEDALPHA
+                    colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
+#else
                     colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = 255;
                     colorBuffer[i].A = c;
-#else
-                    colorBuffer[i].R = colorBuffer[i].G = colorBuffer[i].B = colorBuffer[i].A = c;
 #endif
                 }
             }
@@ -264,9 +256,9 @@ namespace FontStashSharp {
                 Texture.SetDataEXT(0, 0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
         }
 
-        private void Blur(byte* dst, int w, int h, int dstStride, int blur) {
-            var alpha = 0;
-            float sigma = 0;
+        void Blur(byte* dst, int w, int h, int dstStride, int blur) {
+            int alpha;
+            float sigma;
             if (blur < 1)
                 return;
             sigma = blur * 0.57735f;
@@ -277,9 +269,9 @@ namespace FontStashSharp {
             BlurCols(dst, w, h, dstStride, alpha);
         }
 
-        private static void BlurCols(byte* dst, int w, int h, int dstStride, int alpha) {
-            var x = 0;
-            var y = 0;
+        static void BlurCols(byte* dst, int w, int h, int dstStride, int alpha) {
+            int x;
+            int y;
             for (y = 0; y < h; y++) {
                 var z = 0;
                 for (x = 1; x < w; x++) {
@@ -299,9 +291,9 @@ namespace FontStashSharp {
             }
         }
 
-        private static void BlurRows(byte* dst, int w, int h, int dstStride, int alpha) {
-            var x = 0;
-            var y = 0;
+        static void BlurRows(byte* dst, int w, int h, int dstStride, int alpha) {
+            int x;
+            int y;
             for (x = 0; x < w; x++) {
                 var z = 0;
                 for (y = dstStride; y < h * dstStride; y += dstStride) {
