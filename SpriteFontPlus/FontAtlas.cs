@@ -253,7 +253,11 @@ namespace SpriteFontPlus {
             }
 
             fixed (Color* p = colorBuffer)
+#if FNA
+                Texture.SetDataPointerEXT(0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
+#else
                 Texture.SetDataEXT(0, 0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
+#endif
         }
 
         void Blur(byte* dst, int w, int h, int dstStride, int blur) {
