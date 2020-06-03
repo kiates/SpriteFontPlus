@@ -253,7 +253,11 @@ namespace SpriteFontPlus {
             }
 #if TEXTURESETDATAEXT
             fixed (Color* p = colorBuffer)
+#if FNA
+                Texture.SetDataPointerEXT(0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
+#else
                 Texture.SetDataEXT(0, 0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
+#endif
 #else
             Texture.SetData(0, 0, glyph.Bounds, colorBuffer, 0, colorSize);
 #endif
