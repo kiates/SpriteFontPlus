@@ -26,13 +26,23 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Windows|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <OutputPath>bin\Windows\</OutputPath>
+    <DefineConstants>TEXTURESETDATAEXT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>6</LangVersion>
+  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FNA|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\FNA\</OutputPath>
+    <DefineConstants>FNA;TEXTURESETDATAEXT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -85,11 +95,17 @@
     <Compile Include="IOUtils.cs" />
     <Compile Include="SpriteBatchExtensions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\MonoGame_Windows\MonoGame.Framework\MonoGame.Framework.Windows.csproj">
-      <Project>{7de47032-a904-4c29-bd22-2d235e8d91ba}</Project>
-      <Name>MonoGame.Framework.Windows</Name>
-    </ProjectReference>
-  </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'FNA|AnyCPU'">
+      <Reference Include="FNA, Culture=neutral, processorArchitecture=MSIL">
+        <SpecificVersion>False</SpecificVersion>
+        <HintPath>..\..\Libraries\FNA\Windows_64\FNA.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Windows|AnyCPU'">
+      <ProjectReference Include="..\..\MonoGame_Windows\MonoGame.Framework\MonoGame.Framework.Windows.csproj">
+        <Project>{7de47032-a904-4c29-bd22-2d235e8d91ba}</Project>
+        <Name>MonoGame.Framework.Windows</Name>
+      </ProjectReference>
+    </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
