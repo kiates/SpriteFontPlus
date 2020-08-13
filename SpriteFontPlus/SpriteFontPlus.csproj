@@ -95,7 +95,7 @@
     <Compile Include="IOUtils.cs" />
     <Compile Include="SpriteBatchExtensions.cs" />
   </ItemGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'FNA|AnyCPU'">
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'FNA|AnyCPU'">
     <ProjectReference Include="..\..\..\FNA\FNA.csproj">
       <Project>{35253ce1-c864-4cd3-8249-4d1319748e8f}</Project>
       <Name>FNA</Name>
@@ -105,6 +105,18 @@
     <ProjectReference Include="..\..\MonoGame_Windows\MonoGame.Framework\MonoGame.Framework.Windows.csproj">
       <Project>{7de47032-a904-4c29-bd22-2d235e8d91ba}</Project>
       <Name>MonoGame.Framework.Windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Switch|AnyCPU'">
+    <ProjectReference Include="..\..\..\MonoGame\MonoGame.Framework\MonoGame.Framework.Switch.csproj">
+      <Project>{c29cdabf-cabe-c8e1-9646-72616d65776f}</Project>
+      <Name>MonoGame.Framework.Switch</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'XboxOne|AnyCPU'">
+    <ProjectReference Include="..\..\..\MonoGame\MonoGame.Framework\MonoGame.Framework.XboxOne.csproj">
+      <Project>{c29cdabf-cabe-c8e1-9646-72616d65776f}</Project>
+      <Name>MonoGame.Framework.Switch</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
