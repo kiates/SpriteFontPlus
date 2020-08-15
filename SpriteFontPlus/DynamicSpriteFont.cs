@@ -44,19 +44,16 @@ namespace SpriteFontPlus {
 
         public bool UseKernings {
             get { return _fontSystem.UseKernings; }
-
             set { _fontSystem.UseKernings = value; }
         }
 
         public int? DefaultCharacter {
             get { return _fontSystem.DefaultCharacter; }
-
             set { _fontSystem.DefaultCharacter = value; }
         }
 
         public event EventHandler CurrentAtlasFull {
             add { _fontSystem.CurrentAtlasFull += value; }
-
             remove { _fontSystem.CurrentAtlasFull -= value; }
         }
 
@@ -77,12 +74,7 @@ namespace SpriteFontPlus {
         }
 
         public float DrawString(SpriteBatch batch, StringBuilder text, Vector2 pos, Color color, Vector2 scale, float depth = 0f) {
-            _fontSystem.Color = color;
-            _fontSystem.Scale = scale;
-
-            var result = _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth);
-
-            _fontSystem.Scale = Vector2.One;
+            var result = _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth, color, scale.X, scale.Y);
 
             return result;
         }
@@ -92,14 +84,7 @@ namespace SpriteFontPlus {
         }
 
         public float DrawString(SpriteBatch batch, string text, Vector2 pos, Color color, Vector2 scale, float depth = 0f) {
-            _fontSystem.Color = color;
-            _fontSystem.Scale = scale;
-
-            var result = _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth);
-
-            _fontSystem.Scale = Vector2.One;
-
-            return result;
+            return _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth, color, scale.X, scale.Y);
         }
 
         public void AddTtf(byte[] ttf) {

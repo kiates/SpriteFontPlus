@@ -34,11 +34,9 @@ namespace SpriteFontPlus {
             }
         }
 
-        public Color Color;
         public readonly int BlurAmount;
         public readonly int StrokeAmount;
         public float Spacing;
-        public Vector2 Scale;
         public bool UseKernings = true;
 
         public int? DefaultCharacter = ' ';
@@ -102,8 +100,6 @@ namespace SpriteFontPlus {
 
         public void ClearState() {
             FontSize = 12;
-            Color = Color.White;
-            Spacing = 0;
         }
 
         public void AddFontMem(byte[] data) {
@@ -124,7 +120,7 @@ namespace SpriteFontPlus {
             return result;
         }
 
-        public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth) {
+        public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth, Color color, float scaleX, float scaleY) {
             if (str.Length == 0) return 0.0f;
 
             var collection = GetGlyphsCollection(FontSize);
@@ -169,10 +165,10 @@ namespace SpriteFontPlus {
 
                 GetQuad(glyph, prevGlyph, collection, Spacing, ref originX, ref originY, &q);
 
-                q.X0 = (int)(q.X0 * Scale.X);
-                q.X1 = (int)(q.X1 * Scale.X);
-                q.Y0 = (int)(q.Y0 * Scale.Y);
-                q.Y1 = (int)(q.Y1 * Scale.Y);
+                q.X0 = (int)(q.X0 * scaleX);
+                q.X1 = (int)(q.X1 * scaleX);
+                q.Y0 = (int)(q.Y0 * scaleY);
+                q.Y1 = (int)(q.Y1 * scaleY);
 
                 var destRect = new Rectangle((int)(x + q.X0),
                     (int)(y + q.Y0),
@@ -187,7 +183,7 @@ namespace SpriteFontPlus {
                 batch.Draw(glyph.Atlas.Texture,
                     destRect,
                     sourceRect,
-                    Color,
+                    color,
                     0f,
                     Vector2.Zero,
                     SpriteEffects.None,
@@ -200,7 +196,7 @@ namespace SpriteFontPlus {
         }
 
 
-        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth) {
+        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth, Color color, float scaleX, float scaleY) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
             var collection = GetGlyphsCollection(FontSize);
@@ -245,10 +241,10 @@ namespace SpriteFontPlus {
 
                 GetQuad(glyph, prevGlyph, collection, Spacing, ref originX, ref originY, &q);
 
-                q.X0 = (int)(q.X0 * Scale.X);
-                q.X1 = (int)(q.X1 * Scale.X);
-                q.Y0 = (int)(q.Y0 * Scale.Y);
-                q.Y1 = (int)(q.Y1 * Scale.Y);
+                q.X0 = (int)(q.X0 * scaleX);
+                q.X1 = (int)(q.X1 * scaleX);
+                q.Y0 = (int)(q.Y0 * scaleY);
+                q.Y1 = (int)(q.Y1 * scaleY);
 
                 var destRect = new Rectangle((int)(x + q.X0),
                     (int)(y + q.Y0),
@@ -263,7 +259,7 @@ namespace SpriteFontPlus {
                 batch.Draw(glyph.Atlas.Texture,
                     destRect,
                     sourceRect,
-                    Color,
+                    color,
                     0f,
                     Vector2.Zero,
                     SpriteEffects.None,
