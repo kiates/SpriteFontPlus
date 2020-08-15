@@ -32,7 +32,7 @@ namespace SpriteFontPlus {
             return NativeMethods.FindGlyphIndex(_font, codepoint);
         }
 
-        public unsafe void BuildGlyphBitmap(int glyph, float size, float scale, int* advance, int* lsb, int* x0, int* y0, int* x1, int* y1) {
+        public unsafe void BuildGlyphBitmap(int glyph, float scale, int* advance, int* lsb, int* x0, int* y0, int* x1, int* y1) {
             NativeMethods.GetGlyphHMetrics(_font, glyph, advance, lsb);
             NativeMethods.GetGlyphBitmapBox(_font, glyph, scale, scale, x0, y0, x1, y1);
         }

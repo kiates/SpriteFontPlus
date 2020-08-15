@@ -4,9 +4,7 @@ namespace SpriteFontPlus {
     class FontGlyph {
         public Font Font;
         public FontAtlas Atlas;
-        public int Codepoint;
         public int Index;
-        public int Size;
         public Rectangle Bounds;
         public int XAdvance;
         public int XOffset;

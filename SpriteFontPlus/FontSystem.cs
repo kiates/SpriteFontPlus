@@ -17,22 +17,7 @@ namespace SpriteFontPlus {
         float _itw;
         FontAtlas _currentAtlas;
         Point _size;
-        int _fontSize;
-
-        public int FontSize {
-            get { return _fontSize; }
-
-            set {
-                if (value == _fontSize) {
-                    return;
-                }
-
-                _fontSize = value;
-                foreach (var f in _fonts) {
-                    f.Recalculate(_fontSize);
-                }
-            }
-        }
+        int __fontSize;
 
         public readonly int BlurAmount;
         public readonly int StrokeAmount;
@@ -84,7 +69,6 @@ namespace SpriteFontPlus {
 
             _itw = 1.0f / _size.X;
             _ith = 1.0f / _size.Y;
-            ClearState();
         }
 
         public void Dispose() {
@@ -98,14 +82,9 @@ namespace SpriteFontPlus {
             _glyphs?.Clear();
         }
 
-        public void ClearState() {
-            FontSize = 12;
-        }
-
         public void AddFontMem(byte[] data) {
             var font = Font.FromMemory(data);
-
-            font.Recalculate(FontSize);
+            font.Recalculate(__fontSize);
             _fonts.Add(font);
         }
 
@@ -120,10 +99,17 @@ namespace SpriteFontPlus {
             return result;
         }
 
-        public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth, Color color, float scaleX, float scaleY) {
+        public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth, Color color, float scaleX, float scaleY, int fontSize) {
             if (str.Length == 0) return 0.0f;
 
-            var collection = GetGlyphsCollection(FontSize);
+            if (fontSize != __fontSize) {
+                __fontSize = fontSize;
+                foreach (var f in _fonts) {
+                    f.Recalculate(__fontSize);
+                }
+            }
+
+            var collection = GetGlyphsCollection(__fontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
@@ -196,10 +182,17 @@ namespace SpriteFontPlus {
         }
 
 
-        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth, Color color, float scaleX, float scaleY) {
+        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth, Color color, float scaleX, float scaleY, int fontSize) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
-            var collection = GetGlyphsCollection(FontSize);
+            if (fontSize != __fontSize) {
+                __fontSize = fontSize;
+                foreach (var f in _fonts) {
+                    f.Recalculate(__fontSize);
+                }
+            }
+
+            var collection = GetGlyphsCollection(__fontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
@@ -271,10 +264,17 @@ namespace SpriteFontPlus {
             return x;
         }
 
-        public float TextBounds(float x, float y, string str, ref Bounds bounds) {
+        public float TextBounds(float x, float y, string str, ref Bounds bounds, int fontSize) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
-            var collection = GetGlyphsCollection(FontSize);
+            if (fontSize != __fontSize) {
+                __fontSize = fontSize;
+                foreach (var f in _fonts) {
+                    f.Recalculate(__fontSize);
+                }
+            }
+
+            var collection = GetGlyphsCollection(__fontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
@@ -343,10 +343,17 @@ namespace SpriteFontPlus {
             return advance;
         }
 
-        public float TextBounds(float x, float y, StringBuilder str, ref Bounds bounds) {
+        public float TextBounds(float x, float y, StringBuilder str, ref Bounds bounds, int fontSize) {
             if (str == null || str.Length <= 0) return 0.0f;
 
-            var collection = GetGlyphsCollection(FontSize);
+            if (fontSize != __fontSize) {
+                __fontSize = fontSize;
+                foreach (var f in _fonts) {
+                    f.Recalculate(__fontSize);
+                }
+            }
+
+            var collection = GetGlyphsCollection(__fontSize);
 
             // Determine ascent and lineHeight from first character
             float ascent = 0, lineHeight = 0;
@@ -485,7 +492,7 @@ namespace SpriteFontPlus {
             }
 
             int advance, lsb, x0, y0, x1, y1;
-            font.BuildGlyphBitmap(g, FontSize, font.Scale, &advance, &lsb, &x0, &y0, &x1, &y1);
+            font.BuildGlyphBitmap(g, font.Scale, &advance, &lsb, &x0, &y0, &x1, &y1);
 
             var pad = Math.Max(FontGlyph.PadFromBlur(BlurAmount), FontGlyph.PadFromBlur(StrokeAmount));
             var gw = x1 - x0 + pad * 2;
@@ -494,8 +501,6 @@ namespace SpriteFontPlus {
 
             glyph = new FontGlyph {
                 Font = font,
-                Codepoint = codepoint,
-                Size = FontSize,
                 Index = g,
                 Bounds = new Rectangle(0, 0, gw, gh),
                 XAdvance = (int)(font.Scale * advance * 10.0f),
