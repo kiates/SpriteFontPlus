@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bounds.cs" />
-    <Compile Include="CharacterRange.cs" />
     <Compile Include="DynamicSpriteFont.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontAtlas.cs" />
@@ -95,7 +94,7 @@
     <Compile Include="IOUtils.cs" />
     <Compile Include="SpriteBatchExtensions.cs" />
   </ItemGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'FNA|AnyCPU'">
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'FNA|AnyCPU'">
     <ProjectReference Include="..\..\..\FNA\FNA.csproj">
       <Project>{35253ce1-c864-4cd3-8249-4d1319748e8f}</Project>
       <Name>FNA</Name>
