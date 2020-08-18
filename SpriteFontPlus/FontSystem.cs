@@ -264,8 +264,8 @@ namespace SpriteFontPlus {
             return x;
         }
 
-        public float TextBounds(float x, float y, string str, ref Bounds bounds, int fontSize) {
-            if (string.IsNullOrEmpty(str)) return 0.0f;
+        public void TextBounds(float x, float y, string str, ref Bounds bounds, int fontSize) {
+            if (string.IsNullOrEmpty(str)) return;
 
             if (fontSize != __fontSize) {
                 __fontSize = fontSize;
@@ -294,7 +294,6 @@ namespace SpriteFontPlus {
 
             var q = new FontGlyphSquad();
             float startx = 0;
-            float advance = 0;
 
             y += ascent;
 
@@ -333,18 +332,16 @@ namespace SpriteFontPlus {
                 prevGlyph = glyph;
             }
 
-            advance = x - startx;
+            maxx += StrokeAmount * 2;
 
             bounds.X = minx;
             bounds.Y = miny;
             bounds.X2 = maxx;
             bounds.Y2 = maxy;
-
-            return advance;
         }
 
-        public float TextBounds(float x, float y, StringBuilder str, ref Bounds bounds, int fontSize) {
-            if (str == null || str.Length <= 0) return 0.0f;
+        public void TextBounds(float x, float y, StringBuilder str, ref Bounds bounds, int fontSize) {
+            if (str == null || str.Length <= 0) return;
 
             if (fontSize != __fontSize) {
                 __fontSize = fontSize;
@@ -412,14 +409,12 @@ namespace SpriteFontPlus {
                 prevGlyph = glyph;
             }
 
-            advance = x - startx;
+            maxx += StrokeAmount * 2;
 
             bounds.X = minx;
             bounds.Y = miny;
             bounds.X2 = maxx;
             bounds.Y2 = maxy;
-
-            return advance;
         }
 
         bool StringBuilderIsSurrogatePair(StringBuilder sb, int index) {
