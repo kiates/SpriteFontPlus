@@ -483,6 +483,7 @@ namespace SpriteFontPlus {
             Font font;
             var g = GetCodepointIndex(codepoint, out font);
             if (g == 0) {
+                collection.Glyphs[codepoint] = null;
                 return null;
             }
 
