@@ -258,6 +258,9 @@ namespace SpriteFontPlus {
 #else
                 Texture.SetDataEXT(0, 0, glyph.Bounds, (IntPtr)p, colorSize * sizeof(Color));
 #endif
+#elif XNA
+          Texture.GraphicsDevice.Textures[0] = null;
+          Texture.SetData(0, glyph.Bounds, colorBuffer, 0, colorSize);
 #else
             Texture.SetData(0, 0, glyph.Bounds, colorBuffer, 0, colorSize);
 #endif

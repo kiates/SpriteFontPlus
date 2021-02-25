@@ -71,53 +71,56 @@ namespace SpriteFontPlus {
             return font;
         }
 
-        static class NativeMethods {
+        static class NativeMethods
+        {
+          private const string nativeLibName = "StbTrueType";
+
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "FontInfoAlloc", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "FontInfoAlloc", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe IntPtr FontInfoAlloc(void* data, int dataLength);
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "FontInfoRelease", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "FontInfoRelease", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe void FontInfoRelease(IntPtr font);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "InitFont", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "InitFont", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe int InitFont(IntPtr font, int offset);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "GetFontVMetrics", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "GetFontVMetrics", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe void GetFontVMetrics(IntPtr font, int* ascent, int* descent, int* linegap);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "MakeGlyphBitmap", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "MakeGlyphBitmap", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe void MakeGlyphBitmap(IntPtr font, byte* output, int out_w, int out_h, int out_stride, float scale_x, float scale_y, int glyph);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "GetGlyphBitmapBox", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "GetGlyphBitmapBox", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe void GetGlyphBitmapBox(IntPtr font, int glyph, float scale_x, float scale_y, int* ix0, int* iy0, int* ix1, int* iy1);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "GetGlyphHMetrics", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "GetGlyphHMetrics", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe void GetGlyphHMetrics(IntPtr font, int glyph_index, int* advanceWidth, int* leftSideBearing);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "FindGlyphIndex", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "FindGlyphIndex", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe int FindGlyphIndex(IntPtr font, int unicode_codepoint);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "ScaleForPixelHeight", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "ScaleForPixelHeight", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe float ScaleForPixelHeight(IntPtr font, float pixels);
 
 #if !CONSOLE
-            [DllImport("SpriteFontPlus.Native.dll", EntryPoint = "GetGlyphKernAdvance", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+            [DllImport(nativeLibName, EntryPoint = "GetGlyphKernAdvance", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
 #endif
             internal static extern unsafe int GetGlyphKernAdvance(IntPtr font, int glyph1, int glyph2);
         }

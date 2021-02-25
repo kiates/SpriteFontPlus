@@ -54,6 +54,8 @@ namespace SpriteFontPlus {
             set { _fontSystem.DefaultCharacter = value; }
         }
 
+        public float LineSpacing { get { return Spacing; } }
+
         public event EventHandler CurrentAtlasFull {
             add { _fontSystem.CurrentAtlasFull += value; }
 
