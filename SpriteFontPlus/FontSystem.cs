@@ -124,7 +124,8 @@ namespace SpriteFontPlus {
             return result;
         }
 
-        public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth) {
+        public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth, Color color,
+          Vector2 origin, float scaleX, float scaleY) {
             if (str.Length == 0) return 0.0f;
 
             var collection = GetGlyphsCollection(FontSize);
@@ -146,8 +147,8 @@ namespace SpriteFontPlus {
 
             var q = new FontGlyphSquad();
 
-            var originX = 0.0f;
-            var originY = 0.0f;
+            var originX = -origin.X;
+            var originY = -origin.Y;
 
             originY += ascent;
 
@@ -191,7 +192,7 @@ namespace SpriteFontPlus {
         }
 
 
-        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth) {
+        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth, Color color, Vector2 origin, float scaleX, float scaleY) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
             var collection = GetGlyphsCollection(FontSize);
@@ -213,8 +214,8 @@ namespace SpriteFontPlus {
 
             var q = new FontGlyphSquad();
 
-            var originX = 0.0f;
-            var originY = 0.0f;
+            var originX = -origin.X;
+            var originY = -origin.Y;
 
             originY += ascent;
 
