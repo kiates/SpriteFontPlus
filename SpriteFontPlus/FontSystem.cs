@@ -125,7 +125,7 @@ namespace SpriteFontPlus {
         }
 
         public float DrawText(SpriteBatch batch, float x, float y, StringBuilder str, float depth, Color color,
-          Vector2 origin, float scaleX, float scaleY) {
+          Vector2 origin, float scaleX, float scaleY, SpriteEffects spriteEffects) {
             if (str.Length == 0) return 0.0f;
 
             var collection = GetGlyphsCollection(FontSize);
@@ -182,7 +182,7 @@ namespace SpriteFontPlus {
                     0f,
                     Vector2.Zero,
                     new Vector2(scaleX, scaleY),
-                    SpriteEffects.None,
+                    spriteEffects,
                     depth);
 
                 prevGlyph = glyph;
@@ -192,7 +192,7 @@ namespace SpriteFontPlus {
         }
 
 
-        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth, Color color, Vector2 origin, float scaleX, float scaleY) {
+        public float DrawText(SpriteBatch batch, float x, float y, string str, float depth, Color color, Vector2 origin, float scaleX, float scaleY, SpriteEffects spriteEffects) {
             if (string.IsNullOrEmpty(str)) return 0.0f;
 
             var collection = GetGlyphsCollection(FontSize);
@@ -249,7 +249,7 @@ namespace SpriteFontPlus {
                     0f,
                     Vector2.Zero,
                     new Vector2(scaleX, scaleY),
-                    SpriteEffects.None,
+                    spriteEffects,
                     depth);
 
                 prevGlyph = glyph;

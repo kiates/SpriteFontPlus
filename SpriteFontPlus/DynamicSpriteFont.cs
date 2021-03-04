@@ -73,23 +73,23 @@ namespace SpriteFontPlus {
         }
 
         public float DrawString(SpriteBatch batch, StringBuilder text, Vector2 pos, Color color) {
-            return DrawString(batch, text, pos, 0f, color, Vector2.Zero, Vector2.One);
+            return DrawString(batch, text, pos, 0f, color, Vector2.Zero, Vector2.One, SpriteEffects.None);
         }
 
         public float DrawString(SpriteBatch batch, StringBuilder text, Vector2 pos, float depth, Color color,
-          Vector2 origin, Vector2 scale) {
-            var result = _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth, color, origin, scale.X, scale.Y);
+          Vector2 origin, Vector2 scale, SpriteEffects spriteEffects) {
+            var result = _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth, color, origin, scale.X, scale.Y, spriteEffects);
 
             return result;
         }
 
         public float DrawString(SpriteBatch batch, string text, Vector2 pos, Color color) {
-            return DrawString(batch, text, pos, 0f, color, Vector2.Zero, Vector2.One);
+            return DrawString(batch, text, pos, 0f, color, Vector2.Zero, Vector2.One, SpriteEffects.None);
         }
 
         public float DrawString(SpriteBatch batch, string text, Vector2 pos, float depth, Color color, Vector2 origin,
-          Vector2 scale) {
-            return _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth, color, origin, scale.X, scale.Y);
+          Vector2 scale, SpriteEffects spriteEffects) {
+            return _fontSystem.DrawText(batch, pos.X, pos.Y, text, depth, color, origin, scale.X, scale.Y, spriteEffects);
         }
 
         public void AddTtf(byte[] ttf) {

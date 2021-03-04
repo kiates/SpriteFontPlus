@@ -9,12 +9,8 @@ namespace SpriteFontPlus {
         }
 
         public static float DrawString(this SpriteBatch batch, DynamicSpriteFont font, string _string_, Vector2 pos,
-          Color color, Vector2 origin, Vector2 scale, float depth) {
-            return font.DrawString(batch, _string_, pos, depth, color, origin, scale);
-        }
-
-        public static float DrawString(this SpriteBatch batch, DynamicSpriteFont font, StringBuilder stringBuilder, Vector2 pos, Color color) {
-            return font.DrawString(batch, stringBuilder, pos, color);
+          Color color, Vector2 origin, Vector2 scale, SpriteEffects spriteEffects, float depth) {
+            return font.DrawString(batch, _string_, pos, depth, color, origin, scale, spriteEffects);
         }
 
         public static float DrawString(this SpriteBatch batch, DynamicSpriteFont font, StringBuilder stringBuilder, Vector2 pos, Color color) {
@@ -22,8 +18,8 @@ namespace SpriteFontPlus {
         }
 
         public static float DrawString(this SpriteBatch batch, DynamicSpriteFont font, StringBuilder stringBuilder,
-          Vector2 pos, Color color, Vector2 origin, Vector2 scale, float depth) {
-            return font.DrawString(batch, stringBuilder, pos, depth, color, origin, scale);
+          Vector2 pos, Color color, Vector2 origin, Vector2 scale, SpriteEffects spriteEffects, float depth) {
+            return font.DrawString(batch, stringBuilder, pos, depth, color, origin, scale, spriteEffects);
         }
     }
 }
