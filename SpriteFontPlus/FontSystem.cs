@@ -169,27 +169,18 @@ namespace SpriteFontPlus {
 
                 GetQuad(glyph, prevGlyph, collection, Spacing, ref originX, ref originY, &q);
 
-                q.X0 = (int)(q.X0 * Scale.X);
-                q.X1 = (int)(q.X1 * Scale.X);
-                q.Y0 = (int)(q.Y0 * Scale.Y);
-                q.Y1 = (int)(q.Y1 * Scale.Y);
-
-                var destRect = new Rectangle((int)(x + q.X0),
-                    (int)(y + q.Y0),
-                    (int)(q.X1 - q.X0),
-                    (int)(q.Y1 - q.Y0));
-
                 var sourceRect = new Rectangle((int)(q.S0 * _size.X),
                     (int)(q.T0 * _size.Y),
                     (int)((q.S1 - q.S0) * _size.X),
                     (int)((q.T1 - q.T0) * _size.Y));
 
                 batch.Draw(glyph.Atlas.Texture,
-                    destRect,
+                    new Vector2(x + q.X0 * scaleX, y + q.Y0 * scaleY),
                     sourceRect,
                     Color,
                     0f,
                     Vector2.Zero,
+                    new Vector2(scaleX, scaleY),
                     SpriteEffects.None,
                     depth);
 
@@ -245,27 +236,18 @@ namespace SpriteFontPlus {
 
                 GetQuad(glyph, prevGlyph, collection, Spacing, ref originX, ref originY, &q);
 
-                q.X0 = (int)(q.X0 * Scale.X);
-                q.X1 = (int)(q.X1 * Scale.X);
-                q.Y0 = (int)(q.Y0 * Scale.Y);
-                q.Y1 = (int)(q.Y1 * Scale.Y);
-
-                var destRect = new Rectangle((int)(x + q.X0),
-                    (int)(y + q.Y0),
-                    (int)(q.X1 - q.X0),
-                    (int)(q.Y1 - q.Y0));
-
                 var sourceRect = new Rectangle((int)(q.S0 * _size.X),
                     (int)(q.T0 * _size.Y),
                     (int)((q.S1 - q.S0) * _size.X),
                     (int)((q.T1 - q.T0) * _size.Y));
 
                 batch.Draw(glyph.Atlas.Texture,
-                    destRect,
+                    new Vector2(x + q.X0 * scaleX, y + q.Y0 * scaleY),
                     sourceRect,
                     Color,
                     0f,
                     Vector2.Zero,
+                    new Vector2(scaleX, scaleY),
                     SpriteEffects.None,
                     depth);
 
